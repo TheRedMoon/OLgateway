@@ -1,3 +1,4 @@
+from openlineage.client.facet import SchemaDatasetFacet, SchemaField
 from openlineage.client.run import RunEvent, RunState, Run, Job, Dataset
 from openlineage.client import OpenLineageClient
 from datetime import datetime
@@ -16,10 +17,18 @@ def generate_event():
     log.setLevel(logging.DEBUG)
 
     #data set: https://datahubproject.io/docs/generated/metamodel/entities/dataset /https://datahubproject.io/docs/generated/metamodel/entities/dataplatform
+    #https://openlineage.io/getting-started/
+    #add schema to orders?
+    schema = SchemaField("Age", "INT")
+    schema2 = SchemaField("Name", "VARCHAR")
+    schema_list = []
+    schema_list.append(schema)
+    schema_list.append(schema2)
+    facet = SchemaDatasetFacet(fields=schema_list)
 
     inventory = Dataset(namespace="food_delivery", name ="public.inventory")
     menus = Dataset(namespace="food_delivery", name ="public.menus_1")
-    orders = Dataset(namespace="food_delivery", name ="public.orders_1")
+    orders = Dataset(namespace="food_delivery", name ="public.orders_1", facets={"schema": facet})
 
     # job event: https://datahubproject.io/docs/generated/metamodel/entities/datajob
     job = Job(namespace="food_delivery", name ="example.order_data")
@@ -36,13 +45,13 @@ def generate_event():
 
     run = Run(str(uuid4()))
 
-    client.emit(
-        RunEvent(
-            RunState.START,
-            datetime.now().isoformat(),
-            run, job, producer
-        )
-    )
+    # client.emit(
+    #     RunEvent(
+    #         RunState.START,
+    #         datetime.now().isoformat(),
+    #         run, job, producer
+    #     )
+    # )
 
     client.emit(
         RunEvent(

@@ -1,0 +1,4 @@
+flask
+flask-restful
+dataclasses_json
+acryl-datahub
